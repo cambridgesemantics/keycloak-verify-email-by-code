@@ -21,6 +21,7 @@ import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
 import org.keycloak.sessions.AuthenticationSessionModel;
+import org.keycloak.userprofile.UserProfileProvider;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -47,6 +48,8 @@ class VerifyEmailByCodeTest {
     private LoginFormsProvider form;
     @Mock
     private EmailTemplateProvider templateProvider;
+    @Mock
+    private UserProfileProvider userProfileProvider;
     @Mock
     private Response response;
     @Mock
@@ -184,6 +187,7 @@ class VerifyEmailByCodeTest {
         when(requiredActionContext.form()).thenReturn(form);
 
         when(session.getProvider(EmailTemplateProvider.class)).thenReturn(templateProvider);
+        when(session.getProvider(UserProfileProvider.class)).thenReturn(userProfileProvider);
         when(templateProvider.setAuthenticationSession(authSession)).thenReturn(templateProvider);
         when(templateProvider.setRealm(realm)).thenReturn(templateProvider);
         when(templateProvider.setUser(user)).thenReturn(templateProvider);
@@ -256,6 +260,9 @@ class VerifyEmailByCodeTest {
         when(form.addError(any())).thenReturn(form);
         when(form.setAttribute(eq("user"), any(ProfileBean.class))).thenReturn(form);
         when(form.createForm(LOGIN_VERIFY_EMAIL_CODE_TEMPLATE)).thenReturn(response);
+
+        when(requiredActionContext.getSession()).thenReturn(session);
+        when(session.getProvider(UserProfileProvider.class)).thenReturn(userProfileProvider);
 
         action.processAction(requiredActionContext);
 
